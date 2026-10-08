@@ -1,0 +1,1965 @@
+/* ==========================================================================
+   ST. JAMES INSTITUTE — VOCATIONAL TEST — styles.css
+   --------------------------------------------------------------------------
+   Design system: institutional navy + gold (shared with the main St. James
+   Institute site), plus one accent color per test method so the student can
+   always tell, at a glance, which of the three models a card belongs to:
+     - Myers-Briggs (MBTI)   -> blue accent
+     - Big Five              -> green accent
+     - Holland (RIASEC)      -> orange accent
+
+   Table of contents:
+     1.  Reset & base
+     2.  Design tokens (CSS variables)
+     3.  Typography helpers
+     4.  Layout / utilities
+     5.  Accessibility (skip link, focus states)
+     6.  Navigation bar + dropdown + mobile menu
+     7.  Buttons
+     8.  Home / hero section
+     9.  Section headers shared across views
+     10. Career Catalog (search box, faculty groups, career cards)
+     11. Test Methods sections (shared) + MBTI grid
+     12. Big Five grid
+     13. Holland (RIASEC) grid
+     14. Test interface (progress bar, question cards, Likert scale,
+         forced-choice Holland options, navigation buttons)
+     15. Results — empty state
+     16. Results — MBTI identity card
+     17. Results — Big Five card
+     18. Results — Holland (RIASEC) card
+     19. Results — "About this method" info box
+     20. Results — Top 5 careers
+     21. Results — cross-validation alert
+     22. Results — reliability note + action buttons
+     23. Modals (shared) + per-modal accents
+     24. Footer
+     25. Print styles (for the "Print / Save as PDF" button)
+     26. Responsive breakpoints
+     27. Reduced motion
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. RESET & BASE
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: var(--font-body);
+  color: var(--ink-900);
+  background: var(--cream-50);
+  line-height: 1.55;
+  font-size: 16px;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+blockquote {
+  margin: 0;
+}
+
+/* Utility used throughout the page to hide/show the current "view" */
+.hidden {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ==========================================================================
+   2. DESIGN TOKENS
+   ========================================================================== */
+
+:root {
+  /* --- Institutional palette (shared with the main St. James site) --- */
+  --navy-900: #0a2036;
+  --navy-800: #12314f;
+  --navy-700: #1c4066;
+  --gold-500: #e3a83b;
+  --gold-600: #c68c24;
+  --gold-100: #fbeeda;
+  --cream-50: #f7f4ee;
+  --cream-100: #f0ebe0;
+  --white: #ffffff;
+  --ink-900: #16202b;
+  --ink-700: #3b4652;
+  --ink-500: #6b7684;
+  --border: #e1dcce;
+  --success: #2f7a4d;
+  --error: #b4342b;
+
+  /* --- Method accents --- */
+  --mbti-500: #2f6fb0;   /* blue   */
+  --mbti-100: #e6eef8;
+  --mbti-700: #1f4d7d;
+
+  --bigfive-500: #2f8a5b; /* green  */
+  --bigfive-100: #e6f4ec;
+  --bigfive-700: #1f5e3d;
+
+  --holland-500: #d97a1f; /* orange */
+  --holland-100: #fbebd8;
+  --holland-700: #a35414;
+
+  /* --- Typography --- */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* --- Layout --- */
+  --container-width: 1180px;
+  --container-pad: clamp(18px, 4vw, 40px);
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --header-height: 64px;
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 3px rgba(10, 32, 54, 0.08);
+  --shadow-md: 0 8px 24px rgba(10, 32, 54, 0.12);
+  --shadow-lg: 0 20px 48px rgba(10, 32, 54, 0.18);
+
+  /* --- Motion --- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 160ms;
+  --dur-base: 280ms;
+}
+
+
+/* ==========================================================================
+   3. TYPOGRAPHY HELPERS
+   ========================================================================== */
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--navy-900);
+  line-height: 1.18;
+}
+
+.section-title {
+  font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.3rem);
+  margin-bottom: 10px;
+}
+
+.section-desc {
+  color: var(--ink-700);
+  font-size: 1rem;
+  max-width: 70ch;
+  margin-bottom: 24px;
+}
+
+.metodos-breadcrumb {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-bottom: 8px;
+}
+
+.metodo-nota-comparativa {
+  background: var(--cream-100);
+  border-left: 4px solid var(--navy-700);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-size: 0.95rem;
+  color: var(--ink-700);
+  margin-bottom: 18px;
+}
+
+.metodo-explicacion {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.86);
+  margin: 14px 0;
+}
+
+
+/* ==========================================================================
+   4. LAYOUT / UTILITIES
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+  padding-block: clamp(28px, 5vw, 56px);
+}
+
+.seccion-vista {
+  animation: fadeInView var(--dur-base) var(--ease);
+}
+
+@keyframes fadeInView {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ==========================================================================
+   5. ACCESSIBILITY
+   ========================================================================== */
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  background: var(--navy-900);
+  color: var(--white);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  z-index: 1000;
+  transition: top var(--dur-fast) var(--ease);
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2.5px solid var(--gold-500);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+
+/* ==========================================================================
+   6. NAVIGATION BAR
+   ========================================================================== */
+
+nav[role="navigation"] {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-container {
+  max-width: var(--container-width);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+  min-height: var(--header-height);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: auto;
+}
+
+.logo-img {
+  border-radius: 50%;
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--navy-900);
+}
+
+.nav-tabs {
+  display: none;
+  align-items: center;
+  gap: 2px;
+}
+
+.tab-btn {
+  padding: 10px 14px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--ink-900);
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  background: var(--cream-100);
+  color: var(--navy-900);
+}
+
+.tab-btn.active {
+  color: var(--navy-900);
+  background: var(--gold-100);
+  font-weight: 600;
+}
+
+/* --- Dropdown: Test Methods --- */
+
+.nav-dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dropdown-caret {
+  font-size: 0.7em;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.nav-dropdown.is-open .dropdown-caret {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 230px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity var(--dur-base) var(--ease), transform var(--dur-base) var(--ease),
+    visibility var(--dur-base);
+  z-index: 50;
+}
+
+.nav-dropdown.is-open .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+  background: var(--cream-100);
+}
+
+.dropdown-item-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot-mbti {
+  background: var(--mbti-500);
+}
+
+.dot-bigfive {
+  background: var(--bigfive-500);
+}
+
+.dot-holland {
+  background: var(--holland-500);
+}
+
+/* --- Mobile burger button --- */
+
+.nav-burger {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 38px;
+  height: 38px;
+  margin-left: auto;
+}
+
+.nav-burger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--navy-900);
+  transition: transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+}
+
+.nav-burger.is-active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-burger.is-active span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-burger.is-active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+
+/* ==========================================================================
+   7. BUTTONS
+   ========================================================================== */
+
+.btn-start,
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease),
+    opacity var(--dur-fast) var(--ease);
+}
+
+.btn-start:active,
+.btn-action:active {
+  transform: translateY(1px);
+}
+
+.btn-start {
+  background: var(--gold-500);
+  color: var(--navy-900);
+  margin-top: 24px;
+}
+
+.btn-start:hover {
+  background: var(--gold-600);
+}
+
+.btn-action.primary {
+  background: var(--navy-900);
+  color: var(--white);
+}
+
+.btn-action.primary:hover {
+  background: var(--navy-800);
+}
+
+.btn-action.secondary {
+  background: transparent;
+  color: var(--navy-900);
+  border: 1.5px solid var(--navy-900);
+}
+
+.btn-action.secondary:hover {
+  background: var(--navy-900);
+  color: var(--white);
+}
+
+.btn-action:disabled,
+#btn-anterior:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+
+/* ==========================================================================
+   8. HOME / HERO
+   ========================================================================== */
+
+.hero {
+  background: linear-gradient(155deg, var(--navy-900), var(--navy-800));
+  color: var(--white);
+  border-radius: var(--radius-lg);
+  padding: clamp(32px, 6vw, 64px);
+  text-align: center;
+}
+
+.hero h1 {
+  color: var(--white);
+  font-size: clamp(1.9rem, 1.4rem + 2.4vw, 2.9rem);
+  max-width: 22ch;
+  margin-inline: auto;
+}
+
+.hero p {
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 62ch;
+  margin: 18px auto 0;
+  font-size: 1.05rem;
+}
+
+.hero-metodos-linea {
+  margin-top: 22px !important;
+  font-size: 0.9rem !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.hero-metodos-linea a {
+  color: var(--gold-500);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.hero-metodos-linea a:hover {
+  color: var(--white);
+}
+
+
+/* ==========================================================================
+   9. SHARED SECTION HEADERS
+   ========================================================================== */
+
+.metodos-nav-siguiente {
+  margin-top: 36px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+/* ==========================================================================
+   10. CAREER CATALOG
+   ========================================================================== */
+
+.buscador-container {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.buscador-icono {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-500);
+  pointer-events: none;
+}
+
+.input-buscador {
+  width: 100%;
+  padding: 14px 18px 14px 46px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  font-size: 0.95rem;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.input-buscador:focus {
+  border-color: var(--gold-500);
+}
+
+.buscador-contador {
+  font-size: 0.85rem;
+  color: var(--ink-500);
+  margin-bottom: 24px;
+}
+
+.facultad-bloque {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px clamp(18px, 3vw, 28px);
+  margin-bottom: 22px;
+}
+
+.facultad-titulo {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--navy-900);
+  border-bottom: 2px solid var(--navy-900);
+  padding-bottom: 10px;
+  margin-bottom: 8px;
+}
+
+.facultad-materias {
+  font-size: 0.85rem;
+  color: var(--ink-500);
+  margin-bottom: 18px;
+}
+
+.carreras-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.carrera-card {
+  text-align: left;
+  background: var(--cream-50);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.carrera-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--gold-500);
+}
+
+.carrera-card-titulo {
+  font-weight: 700;
+  color: var(--navy-900);
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.carrera-card-desc {
+  font-size: 0.85rem;
+  color: var(--ink-700);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.carrera-card-vector {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--gold-600);
+}
+
+.sin-resultados {
+  text-align: center;
+  color: var(--ink-500);
+  padding: 40px 0;
+}
+
+
+/* ==========================================================================
+   11. TEST METHODS — SHARED + MBTI GRID
+   ========================================================================== */
+
+.metodo-seccion {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: clamp(24px, 4vw, 40px);
+  border: 1px solid var(--border);
+}
+
+.metodo-mbti-seccion {
+  border-top: 5px solid var(--mbti-500);
+}
+
+.metodo-bigfive-seccion {
+  border-top: 5px solid var(--bigfive-500);
+}
+
+.metodo-holland-seccion {
+  border-top: 5px solid var(--holland-500);
+}
+
+.grid-16 {
+  display: grid;
+  gap: 14px;
+  /* Fixed 4 columns on desktop (not auto-fit): with 16 cards already ordered
+     in groups of 4 (Analysts, Diplomats, Sentinels, Explorers), 4 columns
+     makes every row one complete color group. See the responsive breakpoints
+     in section 26 for the 2-column tablet/mobile version. */
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.tipo-card {
+  border-radius: var(--radius-sm);
+  padding: 20px 14px;
+  text-align: center;
+  color: var(--white);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+
+.tipo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.tipo-card-codigo {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: block;
+}
+
+.tipo-card-nombre {
+  font-size: 0.82rem;
+  opacity: 0.92;
+  margin-top: 4px;
+  display: block;
+}
+
+/* MBTI group colors, matching the 4 official NERIS-style clusters */
+.grupo-analistas {
+  background: #33443c;
+}
+
+.grupo-diplomaticos {
+  background: #2f8a5b;
+}
+
+.grupo-centinelas {
+  background: #b0362c;
+}
+
+.grupo-exploradores {
+  background: #c9791b;
+}
+
+/* --- The 4 dichotomy cards (added above the 16-type grid) ---
+   One card per pair (E/I, N/S, F/T, J/P): left pole, right pole, and a
+   short line on what that pair measures. Filled by
+   renderizarDicotomiasMBTI() in script.js. */
+.grid-dicotomias {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, 1fr);
+  margin-bottom: 28px;
+}
+
+.dicotomia-card {
+  background: var(--mbti-100);
+  border: 1px solid var(--mbti-500);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+}
+
+.dicotomia-polos {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--mbti-700);
+  margin-bottom: 8px;
+}
+
+.dicotomia-polos-separador {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--ink-500);
+}
+
+.dicotomia-texto {
+  font-size: 0.85rem;
+  color: var(--ink-700);
+}
+
+
+/* ==========================================================================
+   12. BIG FIVE GRID
+   ========================================================================== */
+
+.grid-bigfive {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.bigfive-dim-card {
+  background: var(--bigfive-100);
+  border: 1px solid var(--bigfive-500);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: left;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+
+.bigfive-dim-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.bigfive-dim-nombre {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--bigfive-700);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.bigfive-dim-resumen {
+  font-size: 0.85rem;
+  color: var(--ink-700);
+  display: block;
+}
+
+
+/* ==========================================================================
+   13. HOLLAND (RIASEC) GRID
+   ========================================================================== */
+
+.grid-holland {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.holland-letra-card {
+  background: var(--holland-100);
+  border: 1px solid var(--holland-500);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+
+.holland-letra-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.holland-letra-grande {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.2rem;
+  color: var(--holland-700);
+  display: block;
+}
+
+.holland-letra-nombre {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink-900);
+  display: block;
+  margin-top: 4px;
+}
+
+
+/* ==========================================================================
+   14. TEST INTERFACE
+   ========================================================================== */
+
+.test-box {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: clamp(20px, 4vw, 36px);
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+.progress-container {
+  margin-bottom: 28px;
+}
+
+.progress-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-700);
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--cream-100);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--navy-700), var(--gold-500));
+  transition: width var(--dur-base) var(--ease);
+}
+
+.counter-badge {
+  display: inline-block;
+  background: var(--holland-100);
+  color: var(--holland-700);
+  border: 1px solid var(--holland-500);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+/* --- Individual question card (shared wrapper) --- */
+
+.pregunta-card {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.pregunta-card:last-of-type {
+  border-bottom: none;
+}
+
+.pregunta-texto {
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--ink-900);
+  margin-bottom: 18px;
+}
+
+/* --- Likert scale (7 circles) for MBTI + Big Five questions --- */
+
+.likert-escala {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.likert-etiquetas {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.likert-etiqueta-agree {
+  color: var(--bigfive-500);
+}
+
+.likert-etiqueta-disagree {
+  color: var(--mbti-500);
+}
+
+.likert-circulos {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.likert-circulo {
+  border-radius: 50%;
+  border: 2px solid var(--bigfive-500);
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+
+.likert-circulo:hover {
+  transform: scale(1.1);
+}
+
+/* Sizes get smaller toward the neutral middle circle, per the approved mock */
+.likert-circulo[data-valor="7"],
+.likert-circulo[data-valor="1"] {
+  width: 34px;
+  height: 34px;
+}
+
+.likert-circulo[data-valor="6"],
+.likert-circulo[data-valor="2"] {
+  width: 28px;
+  height: 28px;
+}
+
+.likert-circulo[data-valor="5"],
+.likert-circulo[data-valor="3"] {
+  width: 22px;
+  height: 22px;
+}
+
+.likert-circulo[data-valor="4"] {
+  width: 16px;
+  height: 16px;
+  border-color: var(--ink-500);
+}
+
+.likert-circulo[data-valor="5"],
+.likert-circulo[data-valor="6"],
+.likert-circulo[data-valor="7"] {
+  border-color: var(--bigfive-500);
+}
+
+.likert-circulo[data-valor="1"],
+.likert-circulo[data-valor="2"],
+.likert-circulo[data-valor="3"] {
+  border-color: var(--mbti-500);
+}
+
+.likert-circulo.is-selected[data-valor="5"],
+.likert-circulo.is-selected[data-valor="6"],
+.likert-circulo.is-selected[data-valor="7"] {
+  background: var(--bigfive-500);
+}
+
+.likert-circulo.is-selected[data-valor="1"],
+.likert-circulo.is-selected[data-valor="2"],
+.likert-circulo.is-selected[data-valor="3"] {
+  background: var(--mbti-500);
+}
+
+.likert-circulo.is-selected[data-valor="4"] {
+  background: var(--ink-500);
+}
+
+/* --- Holland forced-choice scenario options (select 2 to 3) --- */
+
+.holland-opciones {
+  display: grid;
+  gap: 10px;
+}
+
+.holland-opcion {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+
+.holland-opcion:hover {
+  border-color: var(--holland-500);
+  background: var(--holland-100);
+}
+
+.holland-opcion.is-selected {
+  border-color: var(--holland-500);
+  background: var(--holland-100);
+}
+
+.holland-opcion-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--white);
+}
+
+.holland-opcion.is-selected .holland-opcion-check {
+  background: var(--holland-500);
+  border-color: var(--holland-500);
+}
+
+.holland-opcion-texto {
+  font-size: 0.92rem;
+  color: var(--ink-900);
+}
+
+.holland-opcion.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* --- Navigation buttons within the test --- */
+
+.test-navegacion {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+
+/* ==========================================================================
+   15. RESULTS — EMPTY STATE
+   ========================================================================== */
+
+.empty-state {
+  text-align: center;
+  padding: clamp(40px, 8vw, 80px) 20px;
+  max-width: 480px;
+  margin-inline: auto;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: var(--ink-700);
+  margin-bottom: 24px;
+}
+
+
+/* ==========================================================================
+   16. RESULTS — MBTI IDENTITY CARD
+   ========================================================================== */
+
+.mbti-result-card,
+.bigfive-result-card,
+.riasec-result-card {
+  border-radius: var(--radius-lg);
+  padding: clamp(22px, 4vw, 34px);
+  color: var(--white);
+  margin-bottom: 24px;
+}
+
+.mbti-result-card {
+  background: linear-gradient(155deg, var(--mbti-700), var(--navy-900));
+}
+
+.mbti-card-header,
+.riasec-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.mbti-category-badge,
+.riasec-category-badge,
+.bigfive-category-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mbti-code-grande,
+.riasec-code-grande {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 2rem + 2vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.mbti-titulo,
+.riasec-titulo {
+  color: var(--white);
+  font-size: 1.2rem;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.mbti-desc,
+.riasec-desc {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.95rem;
+  margin-bottom: 18px;
+}
+
+/* --- Trait bars shared by the 3 result cards --- */
+
+.mbti-traits,
+.bigfive-traits,
+.riasec-traits {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.trait-row {
+  display: grid;
+  gap: 6px;
+}
+
+.trait-row-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.trait-row-value {
+  font-weight: 700;
+  color: var(--white);
+}
+
+.trait-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+}
+
+.trait-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--white);
+  transition: width var(--dur-base) var(--ease);
+}
+
+
+/* ==========================================================================
+   17. RESULTS — BIG FIVE CARD
+   ========================================================================== */
+
+.bigfive-result-card {
+  background: linear-gradient(155deg, var(--bigfive-700), #0f3324);
+}
+
+
+/* ==========================================================================
+   18. RESULTS — HOLLAND (RIASEC) CARD
+   ========================================================================== */
+
+.riasec-result-card {
+  background: linear-gradient(155deg, var(--holland-700), #4a2a0c);
+}
+
+
+/* ==========================================================================
+   19. RESULTS — "ABOUT THIS METHOD" INFO BOX
+   ========================================================================== */
+
+.results-intro-box {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: var(--cream-100);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--navy-700);
+  border-radius: var(--radius-md);
+  padding: 20px 22px;
+  margin-bottom: 28px;
+}
+
+.results-intro-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.results-intro-titulo {
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+.results-intro-texto {
+  color: var(--ink-700);
+  font-size: 0.9rem;
+}
+
+.metodos-encabezado {
+  color: var(--ink-700);
+  font-size: 0.95rem;
+  max-width: 78ch;
+  margin-bottom: 26px;
+}
+
+
+/* ==========================================================================
+   20. RESULTS — TOP 5 CAREERS
+   ========================================================================== */
+
+.top5-container {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: clamp(20px, 3vw, 30px);
+  margin-bottom: 24px;
+}
+
+.top5-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.top5-titulo {
+  font-size: 1.2rem;
+  margin-bottom: 6px;
+}
+
+.top5-subtitulo {
+  color: var(--ink-500);
+  font-size: 0.85rem;
+  max-width: 50ch;
+}
+
+.top5-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--gold-100);
+  color: var(--gold-600);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.top5-lista {
+  display: grid;
+  gap: 12px;
+}
+
+.top5-item {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--cream-50);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+
+.top5-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.top5-item:first-child {
+  border-color: var(--gold-500);
+  background: var(--gold-100);
+}
+
+.top5-rank {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--navy-900);
+  text-align: center;
+}
+
+.top5-info-nombre {
+  font-weight: 700;
+  color: var(--navy-900);
+  font-size: 0.98rem;
+}
+
+.top5-info-facultad {
+  font-size: 0.82rem;
+  color: var(--ink-500);
+}
+
+.top5-porcentaje {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--navy-900);
+  white-space: nowrap;
+}
+
+/* Wraps .top5-porcentaje + .nivel-badge together (built in script.js). This
+   is the actual grid item inside .top5-item, so the mobile full-width rule
+   in section 26 targets THIS class, not .top5-porcentaje directly. */
+.top5-resultado {
+  text-align: right;
+}
+
+
+/* ==========================================================================
+   21. RESULTS — CROSS-VALIDATION ALERT
+   ========================================================================== */
+
+.alerta-cruce {
+  background: var(--gold-100);
+  border: 1px solid var(--gold-500);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  font-size: 0.9rem;
+  color: var(--ink-900);
+  margin-bottom: 24px;
+}
+
+.alerta-cruce strong {
+  color: var(--gold-600);
+}
+
+
+/* ==========================================================================
+   22. RESULTS — RELIABILITY NOTE + ACTIONS
+   ========================================================================== */
+
+.fiabilidad-nota {
+  font-size: 0.8rem;
+  color: var(--ink-500);
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+  margin-bottom: 24px;
+}
+
+.actions-footer {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+
+/* ==========================================================================
+   23. MODALS
+   ========================================================================== */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 32, 54, 0.55);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal.is-open {
+  display: flex;
+}
+
+.modal-contenido {
+  position: relative;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: clamp(24px, 4vw, 36px);
+  max-width: 560px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalPop var(--dur-base) var(--ease);
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cerrar-modal {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--ink-500);
+  cursor: pointer;
+}
+
+.cerrar-modal:hover {
+  color: var(--navy-900);
+}
+
+.modal-eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gold-600);
+  margin-bottom: 8px;
+}
+
+.modal-subtitulo {
+  margin-top: 18px;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+  color: var(--navy-900);
+}
+
+.modal-parrafo {
+  font-size: 0.92rem;
+  color: var(--ink-700);
+}
+
+.modal-lista {
+  display: grid;
+  gap: 6px;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.modal-lista li {
+  font-size: 0.9rem;
+  color: var(--ink-700);
+}
+
+.badges-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge-pill {
+  display: inline-block;
+  background: var(--cream-100);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  color: var(--navy-900);
+}
+
+/* Per-method accent on the modal top border */
+#modal-personalidad .modal-contenido {
+  border-top: 5px solid var(--mbti-500);
+}
+
+#modal-bigfive .modal-contenido {
+  border-top: 5px solid var(--bigfive-500);
+}
+
+#modal-holland .modal-contenido {
+  border-top: 5px solid var(--holland-500);
+}
+
+#modal-carrera .modal-contenido {
+  border-top: 5px solid var(--gold-500);
+}
+
+.modal-materias {
+  background: var(--cream-100);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.modal-vector {
+  font-weight: 700;
+  color: var(--navy-900);
+}
+
+
+/* ==========================================================================
+   24. FOOTER
+   ========================================================================== */
+
+.site-footer {
+  text-align: center;
+  padding: 24px var(--container-pad);
+  color: var(--ink-500);
+  font-size: 0.82rem;
+  border-top: 1px solid var(--border);
+}
+
+
+/* ==========================================================================
+   25. PRINT STYLES
+   --------------------------------------------------------------------------
+   Used by the "Print / Save as PDF" button on the Results screen.
+   ========================================================================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: var(--white);
+  }
+
+  .mbti-result-card,
+  .bigfive-result-card,
+  .riasec-result-card {
+    color: var(--ink-900) !important;
+    background: var(--cream-100) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    break-inside: avoid;
+  }
+
+  .mbti-titulo,
+  .riasec-titulo,
+  .mbti-desc,
+  .riasec-desc,
+  .metodo-explicacion,
+  .trait-row-labels,
+  .trait-row-value {
+    color: var(--ink-900) !important;
+  }
+
+  .top5-item,
+  .top5-container,
+  .results-intro-box,
+  .alerta-cruce {
+    break-inside: avoid;
+  }
+
+  #resultados-vacio {
+    display: none !important;
+  }
+}
+
+
+/* ==========================================================================
+   26. RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+
+@media (min-width: 900px) {
+  .nav-tabs {
+    display: flex;
+  }
+
+  .nav-burger {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .nav-tabs {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--dur-base) var(--ease), transform var(--dur-base) var(--ease),
+      visibility var(--dur-base);
+  }
+
+  .nav-tabs.is-open {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+  }
+
+  .dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    display: none;
+    padding-left: 12px;
+  }
+
+  .nav-dropdown.is-open .dropdown-menu {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid-16 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-dicotomias {
+    grid-template-columns: 1fr;
+  }
+
+  .likert-escala {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .likert-circulos {
+    align-self: center;
+  }
+
+  .mbti-card-header,
+  .riasec-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .top5-item {
+    grid-template-columns: 32px 1fr;
+  }
+
+  .top5-resultado {
+    grid-column: 1 / -1;
+    text-align: right;
+  }
+
+  .test-navegacion {
+    flex-wrap: wrap;
+  }
+
+  .actions-footer {
+    flex-direction: column;
+  }
+
+  .actions-footer .btn-action {
+    width: 100%;
+  }
+}
+
+
+/* ==========================================================================
+   27. REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* ==========================================================================
+   28. ADDITIONS — bilingual index.html support (language switch, hero
+   chips) + fixes reported after testing script.js against this file:
+     - .trait-reading was inline-styled white text in script.js; it is now
+       a class here, so the print rule in section 25 can recolor it.
+     - .trait-track / .trait-fill stayed white-on-white when printed; added
+       print overrides.
+     - .aviso-test replaces an inline-styled validation banner in script.js.
+     - .nivel-badge is the new "Very high / High / Medium" pill next to
+       each Top 5 percentage.
+     - #contenido:focus removes the focus ring the skip-link's target
+       picks up from the shared focus-visible rule in section 5.
+   ========================================================================== */
+
+#contenido:focus {
+  outline: none;
+}
+
+/* --- Language switch (EN | ES) --- */
+.lang-switch {
+  display: flex;
+  gap: 2px;
+  background: var(--cream-100);
+  border-radius: 999px;
+  padding: 3px;
+}
+
+.lang-btn {
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--ink-500);
+  border-radius: 999px;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.lang-btn:hover {
+  color: var(--navy-900);
+}
+
+.lang-btn.is-active {
+  background: var(--navy-900);
+  color: var(--white);
+}
+
+/* --- Hero chips (Home screen, replaces the old single line of links) --- */
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 26px;
+  padding: 0;
+}
+
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--white);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.hero-chip:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--gold-500);
+  transform: translateY(-2px);
+}
+
+/* --- Reading line under each Big Five bar (was inline white text) --- */
+.trait-reading {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.45;
+}
+
+/* --- Compatibility level badge next to each Top 5 percentage --- */
+.nivel-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nivel-veryhigh {
+  background: var(--gold-100);
+  color: var(--gold-600);
+  border: 1px solid var(--gold-500);
+}
+
+.nivel-high {
+  background: var(--bigfive-100);
+  color: var(--bigfive-700);
+  border: 1px solid var(--bigfive-500);
+}
+
+.nivel-medium {
+  background: var(--cream-100);
+  color: var(--ink-700);
+  border: 1px solid var(--border);
+}
+
+/* --- Validation banner on the test screen (was inline-styled in script.js) --- */
+.aviso-test {
+  background: #fdf1f0;
+  border: 1px solid var(--error);
+  color: #7a1f19;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* --- Cross-validation box, "everything lines up" variant --- */
+.alerta-cruce-ok {
+  background: var(--bigfive-100);
+  border-color: var(--bigfive-500);
+}
+
+.alerta-cruce-ok strong {
+  color: var(--bigfive-700);
+}
+
+/* --- Print: fix white-on-white trait bars and the reading line --- */
+@media print {
+  .trait-track {
+    background: var(--border) !important;
+  }
+
+  .trait-fill {
+    background: var(--navy-900) !important;
+  }
+
+  .trait-reading {
+    color: var(--ink-700) !important;
+  }
+
+  .lang-switch,
+  .hero-chips {
+    display: none !important;
+  }
+}
+
+/* --- Responsive: keep the language switch from crowding the burger --- */
+@media (max-width: 899px) {
+  .lang-switch {
+    margin-left: auto;
+  }
+}
+
+@media (min-width: 900px) {
+  .lang-switch {
+    margin-left: 4px;
+  }
+}
